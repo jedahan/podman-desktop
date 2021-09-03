@@ -39,11 +39,6 @@ packages:
   - podman
   - containerd
   - fuse-overlayfs
-
-runcmd:
-  - [ systemctl, --user, enable, --now, podman.socket ]
-  - [ sudo, loginctl, enable-linger, ubuntu ]
-  - [ sudo, systemctl, enable, --now, ssh.service ]
 " | multipass launch \
     --cpus 2 \
     --mem 2G \
@@ -51,6 +46,10 @@ runcmd:
     --name ${INSTANCE_NAME} \
     --cloud-init - \
     ${VERSION_ID}
+
+multipass exec $INSTANCE_NAME -- systemctl --user enable --now podman.socket
+multipass exec $INSTANCE_NAME -- sudo loginctl enable-linger ubuntu
+multipass exec $INSTANCE_NAME -- sudo systemctl enable --now ssh.service
 
 IP=$(multipass info ${INSTANCE_NAME} | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
 
