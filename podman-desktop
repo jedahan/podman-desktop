@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -e
+
+command -v multipass 2>&1 >/dev/null || die "missing multipass"
+command -v podman 2>&1 >/dev/null || die "missing podman"
+
+INSTANCE_NAME="${INSANCE_NAME:-podman}"
+VERSION_ID="${VERSION_ID:-20.04}"
+IDENTITY="${IDENTITY:-~/.ssh/id_rsa}"
+PUBKEYFILE=${PUBKEY:-${IDENTITY}.pub}
+MOUNTS=${MOUNTS:-/Users /Volumes /private /tmp /var/folders} # Docker Desktop Defaults
+
+test -f $IDENTITY || die "cannot find identity $IDENTITY"
+test -f $PUBKEYFILE || die "cannot find pubkey $PUBKEYFILE"
+PUBKEY=$(cat ${PUBKEYFILE})
+
+multipass set client.primary-name=$INSTANCE_NAME
+
+cat<<EOF
+---
+users:
+  - name: ubuntu
+    - ssh-authorized-keys: [ ${PUBKEY} ]
+
+apt:
+  sources:
+    libcontainers:
+      source: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /"
+
+package_upgrade: true
+packages: ['containerd', 'fuse-overlayfs', 'podman']
+
+runcmd:
+  - systemctl --user enable --now podman.socket
+  - sudo loginctl enable-linger $USER
+  - sudo systemctl enable --now ssh.service
+EOF | \
+  multipass launch \
+    --cpus 2 \
+    --memory 2G \
+    --disk 10G \
+    --name ${INSTANCE_NAME} \
+    --cloud-init - \
+    ${VERSION_ID}
+
+IP=$(multipass info ${INSTANCE_NAME} | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
+
+podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
+
+for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
+
+multipass list
+podman system connection list
+
+echo "to remove:"
+echo ""
+echo "podman system connection remove $INSTANCE_NAME"
+echo "multipass stop $INSTANCE_NAME"
+echo "multipass delete $INSTANCE_NAME"
+echo "multipass purge"
