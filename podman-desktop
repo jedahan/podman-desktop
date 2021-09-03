@@ -1,13 +1,52 @@
 #!/usr/bin/env bash
 set -e
 
+show_help() {
+  echo >&2 "podman-desktop
+    --name <name>             virtual machine name
+    --identity <path/to/key>  user ssh key
+    --mount                   mount docker-desktop mounts
+    <version>                 version of ubuntu (see multipass fetch)
+  "
+}
+die() { echo >&2 "$@"; exit -1 }
 command -v multipass 2>&1 >/dev/null || die "missing multipass"
 command -v podman 2>&1 >/dev/null || die "missing podman"
 
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -h|--help)
+      show_help
+      exit
+      ;;
+    -n|--name)
+      INSTANCE_NAME="$2"
+      shift; shift
+      ;;
+    -i|--identity)
+      IDENTITY="$2"
+      shift; shift
+      ;;
+    -m|--mount)
+      MOUNT="YES"
+      shift
+      ;;
+    *) # unknown option
+      POSITIONAL+=("$1") # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}"
+
+
 INSTANCE_NAME="${INSANCE_NAME:-podman}"
-VERSION_ID="${VERSION_ID:-20.04}"
 IDENTITY="${IDENTITY:-~/.ssh/id_rsa}"
-PUBKEYFILE=${PUBKEY:-${IDENTITY}.pub}
+PUBKEYFILE=${IDENTITY}.pub
+VERSION_ID="${POSITIONAL[0]:-20.04}"
 MOUNTS=${MOUNTS:-/Users /Volumes /private /tmp /var/folders} # Docker Desktop Defaults
 
 test -f $IDENTITY || die "cannot find identity $IDENTITY"
@@ -55,7 +94,7 @@ IP=$(multipass info ${INSTANCE_NAME} | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' 
 
 podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
 
-for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
+[[ "$MOUNT" = "yes" ]] && for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
 
 echo "${INSTANCE_NAME} created\n"
 
