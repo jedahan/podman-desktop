@@ -15,7 +15,11 @@ Setup a vm for podman. Values shown here are defaults. Mounts are the same as Do
     podman-desktop \
       --name podman \
       --identity ~/.ssh/id_rsa \
-      # mount docker-desktop mounts
-      --mount \
+      --cpus 2 \
+      --mem 2G \
+      --disk 10G \
       20.04
 
+Mounts
+
+If you would like to change the default mounts, set the `MOUNTS` variable to an array
