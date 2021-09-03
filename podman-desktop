@@ -115,7 +115,7 @@ podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubunt
 
 for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
 
-echo "${INSTANCE_NAME} created\n"
+echo "${INSTANCE_NAME}\n"
 
 echo >&2 "You may want to add the following to your ~/.ssh/config:
 
