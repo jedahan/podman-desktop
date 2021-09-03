@@ -41,9 +41,9 @@ packages:
   - fuse-overlayfs
 
 runcmd:
-  - systemctl --user enable --now podman.socket
-  - sudo loginctl enable-linger ubuntu
-  - sudo systemctl enable --now ssh.service
+  - [ systemctl, --user, enable, --now, podman.socket ]
+  - [ sudo, loginctl, enable-linger, ubuntu ]
+  - [ sudo, systemctl, enable, --now, ssh.service ]
 " | multipass launch \
     --cpus 2 \
     --mem 2G \
