@@ -9,7 +9,7 @@ show_help() {
     --cpus <#=2>                     # of cpus
     --mem <size=2G>                  amount of memeory
     --disk <size=10G>                disk size
-    <version>                        version of ubuntu (see multipass fetch)
+    <version=20.04>                  version of ubuntu (see multipass fetch)
   "
 }
 
