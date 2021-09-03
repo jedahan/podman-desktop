@@ -14,30 +14,34 @@ test -f $IDENTITY || die "cannot find identity $IDENTITY"
 test -f $PUBKEYFILE || die "cannot find pubkey $PUBKEYFILE"
 PUBKEY=$(cat ${PUBKEYFILE})
 
+
 multipass set client.primary-name=$INSTANCE_NAME
 
-cat<<EOF
+echo "
 ---
 users:
   - name: ubuntu
-    - ssh-authorized-keys: [ ${PUBKEY} ]
+    ssh-authorized-keys:
+      - ${PUBKEY}
 
 apt:
   sources:
     libcontainers:
-      source: "deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /"
+      source: \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\"
 
 package_upgrade: true
-packages: ['containerd', 'fuse-overlayfs', 'podman']
+packages:
+  - podman
+  - containerd
+  - fuse-overlayfs
 
 runcmd:
   - systemctl --user enable --now podman.socket
   - sudo loginctl enable-linger $USER
   - sudo systemctl enable --now ssh.service
-EOF | \
-  multipass launch \
+" | multipass launch \
     --cpus 2 \
-    --memory 2G \
+    --mem 2G \
     --disk 10G \
     --name ${INSTANCE_NAME} \
     --cloud-init - \
@@ -49,12 +53,17 @@ podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubunt
 
 for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
 
-multipass list
-podman system connection list
+echo "${INSTANCE_NAME} created"
 
-echo "to remove:"
-echo ""
-echo "podman system connection remove $INSTANCE_NAME"
-echo "multipass stop $INSTANCE_NAME"
-echo "multipass delete $INSTANCE_NAME"
-echo "multipass purge"
+echo >&2 "ssh in to the vm to trust the fingerprint:
+
+    ssh ubuntu@${IP}
+"
+
+echo >&2 "to remove:
+
+    podman system connection remove \"$INSTANCE_NAME\"
+    multipass stop \"$INSTANCE_NAME\"
+    multipass delete \"$INSTANCE_NAME\"
+    multipass purge
+"
