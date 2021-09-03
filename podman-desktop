@@ -37,6 +37,7 @@ while [[ $# -gt 0 ]]; do
       MEM="$2"; shift 2 ;;
     -d|--disk)
       DISK="$2"; shift 2 ;;
+    --) shift ; break ;;
     -*|--*)
       die "unsupported flag $1"
       ;;
@@ -87,6 +88,7 @@ packages:
     --disk ${DISK:-10G} \
     --name ${INSTANCE_NAME} \
     --cloud-init - \
+    "$@" \
     ${VERSION_ID}
 
 multipass exec $INSTANCE_NAME -- systemctl --user enable --now podman.socket

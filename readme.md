@@ -20,6 +20,8 @@ Setup a vm for podman. Values shown here are defaults. Mounts are the same as Do
       --disk 10G \
       20.04
 
-Mounts
+If you'd like to pass any other params to `multipass launch`, just put them after `--`
 
-If you would like to change the default mounts, set the `MOUNTS` variable to an array
+    podman-desktop -- --network <spec>
+
+If you'd like to change the default mounts, set the `MOUNTS` variable to an array
