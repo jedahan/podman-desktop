@@ -12,10 +12,14 @@ Requires `muiltipass` and `podman`
 
 Setup a vm for podman. Values shown here are defaults. Mounts are the same as Docker Desktop.
 
-    INSTANCE_NAME="podman" \
-    VERSION_ID="20.04" \
-    IDENTITY="~/.ssh/id_rsa" \
-    PUBKEYFILE="$IDENTITY.pub" \
-    MOUNTS="/Users /Volumes /private /tmp /var/folders" \
-      podman-desktop
+    podman-desktop \
+      --name podman \
+      --identity ~/.ssh/id_rsa \
+      --cpus 2 \
+      --mem 2G \
+      --disk 10G \
+      20.04
 
+Mounts
+
+If you would like to change the default mounts, set the `MOUNTS` variable to an array
