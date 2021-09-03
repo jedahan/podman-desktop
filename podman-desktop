@@ -44,8 +44,6 @@ runcmd:
   - systemctl --user enable --now podman.socket
   - sudo loginctl enable-linger ubuntu
   - sudo systemctl enable --now ssh.service
-
-final_message: \"The system is finally up, after $UPTIME seconds\"
 " | multipass launch \
     --cpus 2 \
     --mem 2G \
@@ -60,14 +58,16 @@ podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubunt
 
 for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
 
-echo "${INSTANCE_NAME} created"
+echo "${INSTANCE_NAME} created\n"
 
-echo >&2 "ssh in to the vm to trust the fingerprint:
+echo >&2 "You may want to add the following to your ~/.ssh/config:
 
-    ssh ubuntu@${IP}
+    Host ${IP}
+      ForwardAgent yes
+      User ubuntu
 "
 
-echo >&2 "to remove:
+echo >&2 "To remove:
 
     podman system connection remove \"$INSTANCE_NAME\"
     multipass stop \"$INSTANCE_NAME\"
