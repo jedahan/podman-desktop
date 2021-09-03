@@ -16,8 +16,12 @@ PUBKEY=$(cat ${PUBKEYFILE})
 
 multipass set client.primary-name=$INSTANCE_NAME
 
+echo >&2 "this may take a while - to view progress:
+
+    multipass exec podman -- tail -f /var/log/cloud-init-output.log
+"
+
 echo "
----
 users:
   - name: ubuntu
     ssh-authorized-keys:
@@ -38,8 +42,10 @@ packages:
 
 runcmd:
   - systemctl --user enable --now podman.socket
-  - sudo loginctl enable-linger $USER
+  - sudo loginctl enable-linger ubuntu
   - sudo systemctl enable --now ssh.service
+
+final_message: \"The system is finally up, after $UPTIME seconds\"
 " | multipass launch \
     --cpus 2 \
     --mem 2G \
