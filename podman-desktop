@@ -14,7 +14,6 @@ test -f $IDENTITY || die "cannot find identity $IDENTITY"
 test -f $PUBKEYFILE || die "cannot find pubkey $PUBKEYFILE"
 PUBKEY=$(cat ${PUBKEYFILE})
 
-
 multipass set client.primary-name=$INSTANCE_NAME
 
 echo "
@@ -28,7 +27,7 @@ apt:
   preserve_sources_list: true
   sources:
     libcontainers.list:
-      source: \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}\"
+      source: \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\"
 
 package_upgrade: true
 packages:
