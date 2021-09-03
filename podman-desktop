@@ -12,7 +12,12 @@ show_help() {
     <version>                        version of ubuntu (see multipass fetch)
   "
 }
-die() { echo >&2 "$@"; exit -1 }
+
+die() {
+  echo >&2 "$@"
+  exit 1
+}
+
 command -v multipass 2>&1 >/dev/null || die "missing multipass"
 command -v podman 2>&1 >/dev/null || die "missing podman"
 
