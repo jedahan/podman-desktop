@@ -28,6 +28,7 @@ apt:
   sources:
     libcontainers.list:
       source: \"deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /\"
+      keyid: 4D64390375060AA4
 
 package_upgrade: true
 packages:
