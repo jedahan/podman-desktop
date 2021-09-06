@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-INSTANCE_NAME="${INSANCE_NAME:-podman}"
+INSTANCE_NAME="${INSTANCE_NAME:-podman}"
 IDENTITY="${IDENTITY:-~/.ssh/id_rsa}"
 PUBKEYFILE=${IDENTITY}.pub
 VERSION_ID="${VERSION_ID:-20.04}"
