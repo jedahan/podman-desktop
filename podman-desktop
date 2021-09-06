@@ -18,8 +18,8 @@ die() {
   exit 1
 }
 
-command -v multipass 2>&1 >/dev/null || die "missing multipass"
-command -v podman 2>&1 >/dev/null || die "missing podman"
+command -v multipass &>/dev/null || die "missing multipass"
+command -v podman &>/dev/null || die "missing podman"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
     -d|--disk)
       DISK="$2"; shift 2 ;;
     --) shift ; break ;;
-    -*|--*)
+    --*|-*)
       die "unsupported flag $1"
       ;;
     *)
@@ -53,11 +53,11 @@ PUBKEYFILE=${IDENTITY}.pub
 VERSION_ID="${VERSION_ID:-20.04}"
 MOUNTS=${MOUNTS:-/Users /Volumes /private /tmp /var/folders} # Docker Desktop Defaults
 
-test -f $IDENTITY || die "cannot find identity $IDENTITY"
-test -f $PUBKEYFILE || die "cannot find pubkey $PUBKEYFILE"
-PUBKEY=$(cat ${PUBKEYFILE})
+test -f "$IDENTITY" || die "cannot find identity $IDENTITY"
+test -f "$PUBKEYFILE" || die "cannot find pubkey $PUBKEYFILE"
+PUBKEY=$(cat "$PUBKEYFILE")
 
-multipass set client.primary-name=$INSTANCE_NAME
+multipass set client.primary-name="$INSTANCE_NAME"
 
 echo >&2 "this may take a while - to view progress:
 
@@ -83,25 +83,25 @@ packages:
   - containerd
   - fuse-overlayfs
 " | multipass launch \
-    --cpus ${CPUS:-2} \
-    --mem ${MEM:-2G} \
-    --disk ${DISK:-10G} \
-    --name ${INSTANCE_NAME} \
+    --cpus "${CPUS:-2}" \
+    --mem "${MEM:-2G}" \
+    --disk "${DISK:-10G}" \
+    --name "${INSTANCE_NAME}" \
     --cloud-init - \
     "$@" \
-    ${VERSION_ID}
+    "${VERSION_ID}"
 
-multipass exec $INSTANCE_NAME -- systemctl --user enable --now podman.socket
-multipass exec $INSTANCE_NAME -- sudo loginctl enable-linger ubuntu
-multipass exec $INSTANCE_NAME -- sudo systemctl enable --now ssh.service
+multipass exec "$INSTANCE_NAME" -- systemctl --user enable --now podman.socket
+multipass exec "$INSTANCE_NAME" -- sudo loginctl enable-linger ubuntu
+multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
 
-IP=$(multipass info ${INSTANCE_NAME} | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
+IP=$(multipass info "${INSTANCE_NAME}" | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
 
-podman system connection add $INSTANCE_NAME --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
+podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
 
-for mount in $MOUNTS; do multipass mount "$mount" $INSTANCE_NAME; done
+for mount in $MOUNTS; do multipass mount "$mount" "$INSTANCE_NAME"; done
 
-echo "${INSTANCE_NAME}\n"
+printf "%s\n" "$INSTANCE_NAME"
 
 echo >&2 "You may want to add the following to your ~/.ssh/config:
 
