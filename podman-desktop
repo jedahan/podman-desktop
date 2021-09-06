@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 set -e
 
 show_help() {
@@ -18,10 +18,10 @@ die() {
   exit 1
 }
 
-command -v multipass &>/dev/null || die "missing multipass"
-command -v podman &>/dev/null || die "missing podman"
+command -v multipass >/dev/null 2>&1 || die "missing multipass"
+command -v podman >/dev/null 2>&1 || die "missing podman"
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
   key="$1"
 
   case $key in
@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
       die "unsupported flag $1"
       ;;
     *)
-      [[ "$VERSION_ID" ]] && die "already set version"
+      [ -n "$VERSION_ID" ] && die "already set version"
       VERSION_ID="$1"; shift ;;
   esac
 done
