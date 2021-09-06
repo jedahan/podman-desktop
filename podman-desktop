@@ -61,7 +61,7 @@ multipass set client.primary-name="$INSTANCE_NAME"
 
 echo >&2 "this may take a while - to view progress:
 
-    multipass exec podman -- tail -f /var/log/cloud-init-output.log
+    multipass exec $INSTANCE_NAME -- tail -f /var/log/cloud-init-output.log
 "
 
 echo "
