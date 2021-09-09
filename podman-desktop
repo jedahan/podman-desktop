@@ -97,7 +97,7 @@ multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
 
 IP=$(multipass info "${INSTANCE_NAME}" | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
 
-podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
+podman system connection add "$INSTANCE_NAME" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
 
 for mount in $MOUNTS; do multipass mount "$mount" "$INSTANCE_NAME"; done
 
@@ -106,8 +106,9 @@ printf "%s\n" "$INSTANCE_NAME"
 echo >&2 "You may want to add the following to your ~/.ssh/config:
 
     Host ${IP}
-      ForwardAgent yes
       User ubuntu
+      IdentityFile ${IDENTITY}
+      ForwardAgent yes
 "
 
 echo >&2 "To remove:
