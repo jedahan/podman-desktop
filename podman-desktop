@@ -58,9 +58,12 @@ test -f "$PUBKEYFILE" || die "cannot find pubkey $PUBKEYFILE"
 PUBKEY=$(cat "$PUBKEYFILE")
 
 PRIMARY=$(multipass get client.primary-name)
-if [ "$PRIMARY" = "primary" ]; then
-  multipass set client.primary-name="$INSTANCE_NAME"
-  echo >&2 "this may take a while - to view progress:
+if [ "$PRIMARY" != "$INSTANCE_NAME" ] && [ "$PRIMARY" != "primary" ]; then
+   die "client.primary-name already set ($PRIMARY) for multipass"
+fi
+
+multipass set client.primary-name="$INSTANCE_NAME"
+echo >&2 "this may take a while - to view progress:
 
     multipass exec $INSTANCE_NAME -- tail -f /var/log/cloud-init-output.log
 "
@@ -91,13 +94,9 @@ packages:
     "$@" \
     "${VERSION_ID}"
 
-   multipass exec "$INSTANCE_NAME" -- systemctl --user enable --now podman.socket
-   multipass exec "$INSTANCE_NAME" -- sudo loginctl enable-linger ubuntu
-   multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
-elif [ "$PRIMARY" != "$INSTANCE_NAME" ]; then
-   echo "client.primary-name already set ($PRIMARY) for multipass"
-   exit 1
-fi
+multipass exec "$INSTANCE_NAME" -- systemctl --user enable --now podman.socket
+multipass exec "$INSTANCE_NAME" -- sudo loginctl enable-linger ubuntu
+multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
 
 IP=$(multipass info "${INSTANCE_NAME}" | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
 CONNECTION=ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
