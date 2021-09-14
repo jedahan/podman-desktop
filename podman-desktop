@@ -18,8 +18,47 @@ die() {
   exit 1
 }
 
-command -v multipass >/dev/null 2>&1 || die "missing multipass"
-command -v podman >/dev/null 2>&1 || die "missing podman"
+brew() {
+  set +e
+  if [ -z "$(command -v brew)" ]; then
+    echo "# Install homebrew for easier MacOS management"
+    # shellcheck disable=SC2016
+    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+  fi
+  set -e
+  echo "brew install $1"
+}
+
+validate() {
+  cmd=$1
+  if [ ! -x "$(command -v "$cmd")" ]; then
+    echo "ERROR: \`$cmd\` command not found. Please install $cmd." >&2
+    echo "Instructions are:"
+    if [ "$GOOS" = "linux" ]; then
+      echo "apt-get install $cmd"
+    elif [ "$GOOS" = "darwin" ]; then
+      brew "$cmd"
+    fi
+    exit 1
+  else
+    echo "$cmd found."
+  fi
+}
+
+GOOS=$(uname -s | sed s/Darwin/darwin/ | sed s/Linux/linux/)
+
+validate "podman"
+validate "python3"
+if [ ! -x "$(command -v podman-compose)" ]; then
+  echo "ERROR: \`podman-compose\` command not found. Please install podman-compose." >&2
+  echo "Instructions are: python3 -mpip install podman-compose"
+  exit 1
+else
+  echo "podman-compose found."
+fi
+if [ "$GOOS" = "darwin" ]; then
+  validate "multipass"
+fi
 
 while [ $# -gt 0 ]; do
   key="$1"
