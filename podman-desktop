@@ -102,8 +102,9 @@ IP=$(multipass info "${INSTANCE_NAME}" | grep IPv4: | cut -d ':' -f2 | tr -ds ' 
 CONNECTION=ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
 _IDENTITY=$(podman system connection list --format '{{.URI}} {{.Name}}' | grep "$CONNECTION" | cut -d' ' -f2)
 
-[ "$_IDENTITY" ] && echo "podman has a connection named $_IDENTITY" \
-  || podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" "$CONNECTION"
+if [ "$_IDENTITY" ]; then echo "podman has a connection named $_IDENTITY"; else
+  podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" "$CONNECTION"
+fi
 
 for mount in $MOUNTS; do multipass mount "$mount" "$INSTANCE_NAME"; done
 
