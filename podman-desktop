@@ -13,32 +13,30 @@ show_help() {
   "
 }
 
-die() {
+err() {
   echo >&2 "$@"
-  exit 1
 }
 
-install_cmd() {
-  set +e
-  if [ -z "$(command -v brew)" ]; then
-    echo "# Install homebrew for easier MacOS management"
-    # shellcheck disable=SC2016
-    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
-  fi
-  set -e
-  echo "brew install $1"
+die() {
+  err "$@"
+  exit 1
 }
 
 validate() {
   cmd=$1
-  if [ ! -x "$(command -v "$cmd")" ]; then
-    echo "ERROR: \`$cmd\` command not found. Please install $cmd." >&2
-    echo "Instructions are:"
-    install_cmd "$cmd"
-    exit 1
-  else
-    echo "$cmd found."
-  fi
+  set +e
+  command -v $cmd >/dev/null 2>&1 && exit
+  command -v brew >/dev/null 2>&1 || {
+    die 'Install homebrew for easier macOS management
+
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+'
+  }
+
+  die "ERROR: \`$cmd\` command not found. Please install with
+
+    brew install $cmd
+  "
 }
 
 validate "podman"
