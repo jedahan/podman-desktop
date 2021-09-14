@@ -38,6 +38,8 @@ validate() {
       echo "apt-get install $cmd"
     elif [ "$GOOS" = "darwin" ]; then
       brew "$cmd"
+    else
+      echo "missing $cmd"
     fi
     exit 1
   else
