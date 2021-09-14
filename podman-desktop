@@ -18,7 +18,7 @@ die() {
   exit 1
 }
 
-brew() {
+install_cmd() {
   set +e
   if [ -z "$(command -v brew)" ]; then
     echo "# Install homebrew for easier MacOS management"
@@ -34,35 +34,14 @@ validate() {
   if [ ! -x "$(command -v "$cmd")" ]; then
     echo "ERROR: \`$cmd\` command not found. Please install $cmd." >&2
     echo "Instructions are:"
-    if [ "$GOOS" = "linux" ]; then
-      echo "apt-get install $cmd"
-    elif [ "$GOOS" = "darwin" ]; then
-      brew "$cmd"
-    else
-      echo "missing $cmd"
-    fi
+    install_cmd "$cmd"
     exit 1
   else
     echo "$cmd found."
   fi
 }
 
-GOOS=$(uname -s | sed s/Darwin/darwin/ | sed s/Linux/linux/)
-
 validate "podman"
-validate "python3"
-if [ ! -x "$(command -v podman-compose)" ]; then
-  echo "ERROR: \`podman-compose\` command not found. Please install podman-compose." >&2
-  echo "Instructions are: python3 -mpip install podman-compose"
-  exit 1
-else
-  echo "podman-compose found."
-fi
-if [ "$GOOS" = "linux" ]; then
-  echo "podman setup complete for Linux"
-  exit 0
-fi
-
 validate "multipass"
 
 while [ $# -gt 0 ]; do
