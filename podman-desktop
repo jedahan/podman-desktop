@@ -96,12 +96,11 @@ multipass exec "$INSTANCE_NAME" -- sudo loginctl enable-linger ubuntu
 multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
 
 IP=$(multipass info "${INSTANCE_NAME}" | grep IPv4: | cut -d ':' -f2 | tr -ds ' ' '')
-CONNECTIONS=$(podman system connection list | wc -l)
-if [ "$CONNECTIONS" -eq 0 ]; then 
-  podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
-else
-  echo "podman already has $CONNECTIONS system connections defined"
-fi
+CONNECTION=ssh://ubuntu@"${IP}"/run/user/1000/podman/podman.sock
+_IDENTITY=$(podman system connection list --format '{{.URI}} {{.Name}}' | grep "$CONNECTION" | cut -d' ' -f2)
+
+[ "$_IDENTITY" ] && echo "podman has a connection named $_IDENTITY" \
+  || podman system connection add "$INSTANCE_NAME" --identity "${IDENTITY}" "$CONNECTION"
 
 for mount in $MOUNTS; do multipass mount "$mount" "$INSTANCE_NAME"; done
 
