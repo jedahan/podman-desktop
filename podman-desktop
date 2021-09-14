@@ -58,9 +58,12 @@ if [ ! -x "$(command -v podman-compose)" ]; then
 else
   echo "podman-compose found."
 fi
-if [ "$GOOS" = "darwin" ]; then
-  validate "multipass"
+if [ "$GOOS" = "linux" ]; then
+  echo "podman setup complete for Linux"
+  exit 0
 fi
+
+validate "multipass"
 
 while [ $# -gt 0 ]; do
   key="$1"
