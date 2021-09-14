@@ -18,8 +18,31 @@ die() {
   exit 1
 }
 
-command -v multipass >/dev/null 2>&1 || die "missing multipass"
-command -v podman >/dev/null 2>&1 || die "missing podman"
+install_cmd() {
+  set +e
+  if [ -z "$(command -v brew)" ]; then
+    echo "# Install homebrew for easier MacOS management"
+    # shellcheck disable=SC2016
+    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+  fi
+  set -e
+  echo "brew install $1"
+}
+
+validate() {
+  cmd=$1
+  if [ ! -x "$(command -v "$cmd")" ]; then
+    echo "ERROR: \`$cmd\` command not found. Please install $cmd." >&2
+    echo "Instructions are:"
+    install_cmd "$cmd"
+    exit 1
+  else
+    echo "$cmd found."
+  fi
+}
+
+validate "podman"
+validate "multipass"
 
 while [ $# -gt 0 ]; do
   key="$1"
