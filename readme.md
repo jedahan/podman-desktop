@@ -6,7 +6,7 @@ podman runs on linux, so this script spins up a virtual linux machine, and confi
 
 Requires `muiltipass` and `podman`
 
-> if you are on Apple Silicon, use multipass [1.8.0](https://multipass-ci.s3.amazonaws.com/pr403/multipass-1.8.0-dev.403.pr403%2Bg843f3ca3.mac%2Barm64-Darwin.pkg)
+> if you are on Apple Silicon, use multipass [1.8.0-rc.849](https://multipass-ci.s3.amazonaws.com/multipass-1.8.0-rc.849%2Bgb6625c10.mac-Darwin.pkg)
 
     brew install multipass podman
 
