@@ -25,7 +25,7 @@ die() {
 validate() {
   cmd=$1
   set +e
-  command -v $cmd >/dev/null 2>&1 && exit
+  command -v $cmd >/dev/null 2>&1 && return
   command -v brew >/dev/null 2>&1 || {
     die 'Install homebrew for easier macOS management
 
@@ -80,10 +80,11 @@ PUBKEY=$(cat "$PUBKEYFILE")
 
 PRIMARY=$(multipass get client.primary-name)
 if [ "$PRIMARY" != "$INSTANCE_NAME" ] && [ "$PRIMARY" != "primary" ]; then
-   die "client.primary-name already set ($PRIMARY) for multipass"
+   err "client.primary-name already set ($PRIMARY) for multipass"
+else
+   multipass set client.primary-name="$INSTANCE_NAME"
 fi
 
-multipass set client.primary-name="$INSTANCE_NAME"
 echo >&2 "this may take a while - to view progress:
 
     multipass exec $INSTANCE_NAME -- tail -f /var/log/cloud-init-output.log
