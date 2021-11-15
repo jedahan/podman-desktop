@@ -83,6 +83,13 @@ if [ "$PRIMARY" != "$INSTANCE_NAME" ] && [ "$PRIMARY" != "primary" ]; then
    die "client.primary-name already set ($PRIMARY) for multipass"
 fi
 
+if ! pgrep multipassd 2>/dev/null; then
+  echo multipassd not running, please run the following command and try again
+  echo
+  echo     sudo launchctl start com.canonical.multipassd
+  exit 1
+fi
+
 multipass set client.primary-name="$INSTANCE_NAME"
 echo >&2 "this may take a while - to view progress:
 
