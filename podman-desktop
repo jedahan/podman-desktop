@@ -95,6 +95,7 @@ echo >&2 "this may take a while - to view progress:
 
     multipass exec $INSTANCE_NAME -- tail -f /var/log/cloud-init-output.log
 "
+
   echo "
 users:
   - name: ubuntu
