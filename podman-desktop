@@ -36,8 +36,6 @@ validate() {
     echo "Instructions are:"
     install_cmd "$cmd"
     exit 1
-  else
-    echo "$cmd found."
   fi
 }
 
