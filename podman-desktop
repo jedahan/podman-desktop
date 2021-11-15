@@ -123,6 +123,8 @@ packages:
     "$@" \
     "${VERSION_ID}"
 
+while ! multipass info "$INSTANCE_NAME" 2>/dev/null; do printf '.'; sleep 3; done
+
 multipass exec "$INSTANCE_NAME" -- systemctl --user enable --now podman.socket
 multipass exec "$INSTANCE_NAME" -- sudo loginctl enable-linger ubuntu
 multipass exec "$INSTANCE_NAME" -- sudo systemctl enable --now ssh.service
