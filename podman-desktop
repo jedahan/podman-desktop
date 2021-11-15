@@ -23,9 +23,9 @@ die() {
 install_cmd() {
   set +e
   if [ -z "$(command -v brew)" ]; then
-    echo "# Install homebrew for easier MacOS management"
+    echo "# Install homebrew for easier MacOS management\n"
     # shellcheck disable=SC2016
-    echo '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
+    echo '    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
   fi
   set -e
   echo "brew install $1"
@@ -43,8 +43,6 @@ validate() {
 
 validate "podman"
 validate "multipass"
-
-LAUNCH_OPTIONS=""
 
 while [ $# -gt 0 ]; do
   key="$1"
