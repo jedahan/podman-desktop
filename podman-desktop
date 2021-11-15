@@ -6,10 +6,12 @@ show_help() {
 
     --name <name=podman>             virtual machine name
     --identity <path=~/.ssh/id_rsa>  user ssh key
-    --cpus <#=2>                     # of cpus
-    --mem <size=2G>                  amount of memeory
-    --disk <size=10G>                disk size
-    <version=20.04>                  version of ubuntu (see multipass fetch)
+    <image=20.04>                    ubuntu identifier (see multipass fetch)
+    --                               separator to pass options to `multipass launch`
+    --cpus <#=1>                     # of cpus
+    --mem <size=1G>                  amount of memeory
+    --disk <size=5G>                 disk size
+    --network                        see multipass launch --help
   "
 }
 
@@ -42,6 +44,8 @@ validate() {
 validate "podman"
 validate "multipass"
 
+LAUNCH_OPTIONS=""
+
 while [ $# -gt 0 ]; do
   key="$1"
 
@@ -52,16 +56,7 @@ while [ $# -gt 0 ]; do
       INSTANCE_NAME="$2"; shift 2 ;;
     -i|--identity)
       IDENTITY="$2"; shift 2 ;;
-    -c|--cpus)
-      CPUS="$2"; shift 2 ;;
-    -m|--mem)
-      MEM="$2"; shift 2 ;;
-    -d|--disk)
-      DISK="$2"; shift 2 ;;
     --) shift ; break ;;
-    --*|-*)
-      die "unsupported flag $1"
-      ;;
     *)
       [ -n "$VERSION_ID" ] && die "already set version"
       VERSION_ID="$1"; shift ;;
@@ -115,9 +110,6 @@ packages:
   - containerd
   - fuse-overlayfs
 " | multipass launch \
-    --cpus "${CPUS:-2}" \
-    --mem "${MEM:-2G}" \
-    --disk "${DISK:-10G}" \
     --name "${INSTANCE_NAME}" \
     --cloud-init - \
     "$@" \

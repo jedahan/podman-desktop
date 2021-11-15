@@ -13,13 +13,10 @@ Setup a vm for podman. Values shown here are defaults. Mounts are the same as Do
     podman-desktop \
       --name podman \
       --identity ~/.ssh/id_rsa \
-      --cpus 2 \
-      --mem 2G \
-      --disk 10G \
       20.04
 
 If you'd like to pass any other params to `multipass launch`, just put them after `--`
 
-    podman-desktop -- --network <spec>
+    podman-desktop -- --cpus 3  --mem 3G --network <spec>
 
 If you'd like to change the default mounts, set the `MOUNTS` variable to an array
