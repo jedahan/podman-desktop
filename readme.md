@@ -12,7 +12,7 @@ Setup a vm for podman. Values shown here are defaults. Mounts are the same as Do
 
     podman-desktop \
       --name podman \
-      --identity ~/.ssh/id_rsa \
+      --identity ~/.ssh/podman \
       20.04
 
 If you'd like to pass any other params to `multipass launch`, just put them after `--`
