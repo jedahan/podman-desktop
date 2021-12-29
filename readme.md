@@ -19,4 +19,8 @@ If you'd like to pass any other params to `multipass launch`, just put them afte
 
     podman-desktop -- --cpus 3  --mem 3G --network <spec>
 
+By default, podman-desktop will mount the same folders as Docker Desktop.
+
 If you'd like to change the default mounts, set the `MOUNTS` variable to an array
+
+If you'd like to mount nothing, (for example, due to sshfs_server cpu usage) set `MOUNTS` to an empty string.
