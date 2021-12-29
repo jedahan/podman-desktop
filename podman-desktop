@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 set -e
 
 show_help() {
@@ -65,7 +65,7 @@ INSTANCE_NAME="${INSTANCE_NAME:-podman}"
 IDENTITY="${IDENTITY:-$HOME/.ssh/podman}"
 PUBKEYFILE=${IDENTITY}.pub
 VERSION_ID="${VERSION_ID:-20.04}"
-MOUNTS=${MOUNTS:-/Users /Volumes /private /tmp /var/folders} # Docker Desktop Defaults
+MOUNTS=${MOUNTS:+/Users /Volumes /private /tmp /var/folders} # Docker Desktop Defaults
 
 test -f "$IDENTITY" || die "cannot find identity $IDENTITY"
 test -f "$PUBKEYFILE" || die "cannot find pubkey $PUBKEYFILE"
