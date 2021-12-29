@@ -131,8 +131,8 @@ printf "%s\n" "$INSTANCE_NAME"
 
 echo >&2 "You may want to add the following to your ~/.ssh/config:
 
-    Host ${IP}
-      ForwardAgent yes
+    Host podman
+      Hostname ${IP}
       User ubuntu
 "
 
