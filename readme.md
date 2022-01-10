@@ -24,3 +24,20 @@ By default, podman-desktop will mount the same folders as Docker Desktop.
 If you'd like to change the default mounts, set the `MOUNTS` variable to an array
 
 If you'd like to mount nothing, (for example, due to sshfs_server cpu usage) set `MOUNTS` to an empty string.
+
+
+## Image building with buildkit
+
+Podman builds are considerably slower compared to Docker builds. One way to mitigate this is to use [buildkit](https://github.com/moby/buildkit). Multipass instances provisioned with podman-desktop already contain a ready-to-go buildkit daemon. All you need to do is use the buildkit-cli from your host system:
+
+	buildctl \
+		--addr=tcp://$(shell multipass info podman --format json | jq -r ".info.podman.ipv4[]"):1234 \
+		build \
+		--frontend dockerfile.v0 \
+		--local context=. \
+		--local dockerfile=. \
+		--output type=oci,name="thisgetsignored:imagename" \                                                                                               
+		| podman load
+	
+
+Please note, the resulting image will be `localhost/imagename:latest`, because [Buildkit does not seem write OCI compliant image annotations](https://github.com/containers/podman/issues/12560#issuecomment-990826349-permalink).
