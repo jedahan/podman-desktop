@@ -107,6 +107,33 @@ packages:
   - podman
   - containerd
   - fuse-overlayfs
+
+write_files:
+- path: /lib/systemd/system/buildkitd.service
+  owner: root:root
+  permissions: \"0755\"
+  content: |
+    [Unit]
+    Description=Buildkitd
+    After=network.target
+
+    [Service]
+    Type=simple
+    ExecStart=/opt/buildkit/bin/buildkitd --addr tcp://0.0.0.0:1234
+    
+    [Install]
+    WantedBy=multi-user.target
+
+
+runcmd:
+  - systemctl daemon-reload
+  - mkdir /opt/buildkit
+  - cd /opt/buildkit
+  - curl -L https://github.com/moby/buildkit/releases/download/v0.9.3/buildkit-v0.9.3.linux-amd64.tar.gz > buildkit.tar.gz
+  - tar -xvf buildkit.tar.gz
+  - systemctl daemon-reload
+  - sudo systemctl enable --now buildkitd.service
+  - sudo systemctl start buildkitd.service
 " | multipass launch \
     --name "${INSTANCE_NAME}" \
     --cloud-init - \
