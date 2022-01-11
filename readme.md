@@ -41,3 +41,8 @@ Podman builds are considerably slower compared to Docker builds. One way to miti
 	
 
 Please note, the resulting image will be `localhost/imagename:latest`, because [Buildkit does not seem write OCI compliant image annotations](https://github.com/containers/podman/issues/12560#issuecomment-990826349-permalink).
+
+
+# Thank you
+
+Thank you to @heussd for adding buildkit support
